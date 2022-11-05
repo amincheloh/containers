@@ -30,14 +30,21 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_TOKEN }}
 
-      - name: Docker meta
-        id: meta
+      - name: Read rolling tags
+        id: rolling-tags
+        uses:  mikefarah/yq@v4.29.2
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        with:
+          cmd: yq eval '.rolling-tags[]' ./${{ matrix.image }}/tags-info.yml
+
+      - name: Docker metadata
+        id: docker-metadata
         uses: docker/metadata-action@v4
         if: steps.changed-files-specific.outputs.any_changed == 'true'
         with:
           images: quay.io/amincheloh/${{ matrix.image }}
           tags: |
-            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
+            ${{ steps.rolling-tags.outputs.result }}
             type=raw,value={{date 'YYYYMMDD'}}
             type=sha
 
@@ -47,4 +54,4 @@ jobs:
         with:
           context: ${{ matrix.image }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.docker-metadata.outputs.tags }}
