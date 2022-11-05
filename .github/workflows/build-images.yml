@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [k8s-tools]
+        image: [k8s-tools, odoo-16]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
