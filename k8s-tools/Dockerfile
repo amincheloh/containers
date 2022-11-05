@@ -1,6 +1,6 @@
 FROM alpine:3.16.2
 
-ARG KUBECTL_VERSION=1.25.3
+ARG KUBECTL_VERSION=1.25.3 # see https://dl.k8s.io/release/stable.txt to latest stable version
 ARG HELM_VERSION=3.10.1
 ARG HELM_PUSH_VERSION=0.10.3
 
