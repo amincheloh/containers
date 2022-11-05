@@ -1,0 +1,47 @@
+name: test-action
+
+on:
+  push:
+    branches:
+      - 'test-action'
+
+jobs:
+  test-action:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [k8s-tools]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get changed files in the image folder
+        id: changed-files-specific
+        uses: tj-actions/changed-files@v34
+        with:
+          files: |
+            ${{ matrix.image }}/**
+
+      - name: Login to Quay.io
+        uses: docker/login-action@v2
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_TOKEN }}
+
+      - name: Rolling tags
+        id: rolling-tags
+        uses:  mikefarah/yq@v4
+        with:
+          cmd: yq eval '(.rolling-tags[] |= "type=raw,value=" + .)[]' ./${{ matrix.image }}/tags-info.yml
+
+      - name: Docker meta
+        id: docker-meta
+        uses: docker/metadata-action@v4
+        with:
+          images: quay.io/amincheloh/${{ matrix.image }}
+          tags: |
+            ${{ steps.rolling-tags.outputs.result }}
+            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
+            type=raw,value={{date 'YYYYMMDD'}}
+            type=sha
