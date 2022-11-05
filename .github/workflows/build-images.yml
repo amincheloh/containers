@@ -1,0 +1,47 @@
+name: build-images
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  k8s-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get changed files in the k8s-tools folder
+        id: changed-files-specific
+        uses: tj-actions/changed-files@v34
+        with:
+          files: |
+            k8s-tools/**
+
+      - name: Login to Quay.io
+        uses: docker/login-action@v2
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_TOKEN }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        with:
+          images: quay.io/amincheloh/k8s-tools
+          tags: |
+            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
+            type=raw,value={{date 'YYYYMMDD'}}
+            type=sha
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        with:
+          context: k8s-tools
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
