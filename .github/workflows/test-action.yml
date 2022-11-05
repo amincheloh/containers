@@ -31,7 +31,7 @@ jobs:
 
       - name: Rolling tags
         id: rolling-tags
-        uses:  mikefarah/yq@v4
+        uses:  mikefarah/yq@v4.29.2
         with:
           cmd: yq --version
           # cmd: yq '(.rolling-tags[] |= "type=raw,value=" + .)[]' ./${{ matrix.image }}/tags-info.yml
