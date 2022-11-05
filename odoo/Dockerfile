@@ -14,6 +14,7 @@ RUN mkdir -p /mnt/oca-addons && cd /mnt/oca-addons && \
     web \
     server-ux \
     partner-contact \
+    hr \
   ) && \
   for REPO in "${OCA_REPOS[@]}"; do \
     git clone --depth 1 --branch 16.0 https://github.com/OCA/${REPO}.git && \
