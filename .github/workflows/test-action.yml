@@ -33,8 +33,7 @@ jobs:
         id: rolling-tags
         uses:  mikefarah/yq@v4.29.2
         with:
-          cmd: yq --version
-          # cmd: yq '(.rolling-tags[] |= "type=raw,value=" + .)[]' ./${{ matrix.image }}/tags-info.yml
+          cmd: yq eval '.rolling-tags[]' ./k8s-tools/tags-info.yml
 
       - name: Docker meta
         id: docker-meta
