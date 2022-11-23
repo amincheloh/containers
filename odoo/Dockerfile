@@ -23,4 +23,12 @@ RUN mkdir -p /mnt/oca-addons && cd /mnt/oca-addons && \
     rm -r ${REPO} ; \
   done
 
+# install amincheloh/odoo-addons in same folder with oca-addons preserve backward compat
+RUN cd /mnt/oca-addons && \
+  REPO=odoo-addons && \
+  git clone --depth 1 --branch 16.0 https://github.com/amincheloh/${REPO}.git && \
+  rm -rf ${REPO}/{setup,LICENSE,README.md,requirements.txt} && \
+  mv ${REPO}/* . && \
+  rm -r ${REPO}
+
 RUN sed -i -E -e 's#(addons_path.+)#\1,/mnt/oca-addons#' /opt/bitnami/scripts/odoo/bitnami-templates/odoo.conf.tpl
