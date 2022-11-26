@@ -22,6 +22,9 @@ RUN mkdir -p /mnt/oca-addons && cd /mnt/oca-addons && \
     mv ${REPO}/* . && \
     rm -r ${REPO} ; \
   done
+ 
+RUN /opt/bitnami/odoo/venv/bin/pip3 install \
+  num2words==0.5.12
 
 # install amincheloh/odoo-addons in same folder with oca-addons preserve backward compat
 RUN cd /mnt/oca-addons && \
