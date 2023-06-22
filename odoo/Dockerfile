@@ -1,4 +1,4 @@
-FROM docker.io/bitnami/odoo:16.0.20230315-debian-11-r2
+FROM docker.io/bitnami/odoo:16.0.20230615-debian-11-r2
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
